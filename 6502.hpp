@@ -12,11 +12,94 @@ class CPU {
     public:
         CPU(); // Power Up State
 
-        // INPUTS
+        // Access Operations
 
-        
+        void OP_LDA();
+        void OP_STA();
+        void OP_LDX();
+        void OP_LDY();
+        void OP_STY();
 
-        // OUTPUTS
+        // Transfer Operations
+
+        void OP_TAX();
+        void OP_TXA();
+        void OP_TAY();
+        void OP_TYA();
+
+        // Arithmetic Operations
+
+        void OP_ADC();
+        void OP_SBC();
+        void OP_INC();
+        void OP_DEC();
+        void OP_INX();
+        void OP_DEX();
+        void OP_INY();
+        void OP_DEY();
+
+        // Shift Operations
+
+        void OP_ASL();
+        void OP_LSR();
+        void OP_ROL();
+        void OP_ROL();
+        void OP_ROR();
+
+        // Bitwise Operations
+
+        void OP_AND();
+        void OP_ORA();
+        void OP_EOR();
+        void OP_BIT();
+
+        // Compare Operations
+
+        void OP_CMP();
+        void OP_CPX();
+        void OP_CPY();
+
+        // Branch Operations
+
+        void OP_BCC();
+        void OP_BCS();
+        void OP_BEQ();
+        void OP_BNE();
+        void OP_BPL();
+        void OP_BMI();
+        void OP_BVC();
+        void OP_BVS();
+
+        // Jump Operations
+
+        void OP_JMP();
+        void OP_JSR();
+        void OP_RTS();
+        void OP_BRK();
+        void OP_RTI();
+
+        // Stack Operations
+
+        void OP_PHA();
+        void OP_PLA();
+        void OP_PHP();
+        void OP_PLP();
+        void OP_TXS();
+        void OP_TSX();
+
+        // Flags Operations
+
+        void OP_CLC();
+        void OP_SEC();
+        void OP_CLI();
+        void OP_SEI();
+        void OP_CLD();
+        void OP_SED();
+        void OP_CLV();
+
+        // Other Operations
+
+        void OP_NOP();
         
 
         void PrintRegisters(); // Print Registers for Debugging
