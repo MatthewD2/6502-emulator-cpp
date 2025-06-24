@@ -7,6 +7,8 @@ using namespace std;
 
 typedef int8_t BYTE;
 typedef int16_t HALF_WORD;
+typedef bool CLOCK;
+typedef bool SIGNAL;
 
 class CPU {
     public:
