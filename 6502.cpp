@@ -660,6 +660,8 @@ ADDRESS CPU::ADDR_ZERO_Y() {
 
 }
 
+// Access Operations
+
 void CPU::OP_LDA(BYTE opcode) {
     
     ADDRESS address; 
@@ -702,16 +704,197 @@ void CPU::OP_LDA(BYTE opcode) {
 
 void CPU::OP_STA(BYTE opcode) {
 
+    ADDRESS address; 
+
+    switch (opcode) {
+        case (0x85):
+            address = ADDR_ZERO();
+            break;
+        case (0x95):
+            address = ADDR_ZERO_X();
+            break;
+        case (0x8D):
+            address = ADDR_ABS();
+            break;
+        case (0x9D):
+            address = ADDR_ABS_X();
+            break;
+        case (0x99):
+            address = ADDR_ABS_Y();
+            break;
+        case (0x81):
+            address = ADDR_IND_X();
+            break;
+        case (0x91):
+            address = ADDR_IND_Y();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
 }
 
 void CPU::OP_LDX(BYTE opcode) {
+
+    ADDRESS address; 
+
+    switch (opcode) {
+        case (0xA2):
+            address = ADDR_IMM();
+            break;
+        case (0xA6):
+            address = ADDR_ZERO();
+            break;
+        case (0xB6):
+            address = ADDR_ZERO_Y();
+            break;
+        case (0xAE):
+            address = ADDR_ABS();
+            break;
+        case (0xBE):
+            address = ADDR_ABS_Y();
+            break;
+        default:
+            address = 0;
+            break;
+    }
 
 }
 
 void CPU::OP_LDY(BYTE opcode) {
 
+    ADDRESS address; 
+
+    switch (opcode) {
+        case (0xA0):
+            address = ADDR_IMM();
+            break;
+        case (0xA4):
+            address = ADDR_ZERO();
+            break;
+        case (0xB4):
+            address = ADDR_ZERO_Y();
+            break;
+        case (0xAC):
+            address = ADDR_ABS();
+            break;
+        case (0xBC):
+            address = ADDR_ABS_X();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
 }
 
 void CPU::OP_STY(BYTE opcode) {
+    
+    ADDRESS address; 
 
+    switch (opcode) {
+        case (0x84):
+            address = ADDR_ZERO();
+            break;
+        case (0x94):
+            address = ADDR_ZERO_X();
+            break;
+        case (0x8C):
+            address = ADDR_ABS();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+}
+
+// Transfer Operations
+
+void OP_TAX(BYTE opcode) {
+    ADDRESS address; 
+
+    switch (opcode) {
+        case (0xAA):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+        }
+
+}
+    
+void OP_TXA(BYTE opcode) {
+    ADDRESS address; 
+        
+    switch (opcode) {
+        case (0x8A):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+}
+
+void OP_TAY(BYTE opcode) {
+    ADDRESS address; 
+
+    switch (opcode) {
+        case (0xA8):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
+void OP_TYA(BYTE opcode) {
+    ADDRESS address; 
+        
+    switch (opcode) {
+        case (0x98):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
+// Arithmetic Operations
+
+void OP_ADC(BYTE opcode) {
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x69):
+            address = ADDR_IMM();
+            break;
+        case (0x65):
+            address = ADDR_ZERO();
+            break;
+        case (0x75):
+            address = ADDR_ZERO_Y();
+            break;
+        case (0x6D):
+            address = ADDR_ABS();
+            break;
+        case (0x7D):
+            address = ADDR_ABS_X();
+            break;
+        case (0x79):
+            address = ADDR_ABS_Y();
+        case (0x61):
+            address = ADDR_IND_X();
+        case (0x71):
+            address = ADDR_IND_Y();
+        default:
+            address = 0;
+            break;
+    }
 }
