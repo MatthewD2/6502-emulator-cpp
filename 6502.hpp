@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <stdexcept>
+#include <stdbool.h>
 
 using namespace std;
 
@@ -48,7 +49,6 @@ class CPU {
 
         void OP_ASL(BYTE opcode);
         void OP_LSR(BYTE opcode);
-        void OP_ROL(BYTE opcode);
         void OP_ROL(BYTE opcode);
         void OP_ROR(BYTE opcode);
 

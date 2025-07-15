@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 #include <iostream>
 #include <string.h>
@@ -16,5 +18,5 @@ class RAM {
 };
 
 RAM::RAM() {
-    memset(_memory, 0, sizeof(BYTE) * MEM_CAPACITY); // zeros out the memory
+    memset(_memory, 0, sizeof(BYTE) * MEM_CAPACITY);
 }
