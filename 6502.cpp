@@ -1558,6 +1558,25 @@ void CPU::OP_CMP(BYTE opcode) {
 
 }
 
+void CPU::OP_PHA(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x48):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    write(0x0100 + S, A);
+
+    S = S - 1;
+
+}
+
 void CPU::OP_NOP(BYTE opcode) {
     
     ADDRESS address;
