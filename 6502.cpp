@@ -731,6 +731,8 @@ void CPU::OP_STA(BYTE opcode) {
             break;
     }
 
+    write(address, A);
+    
 }
 
 void CPU::OP_LDX(BYTE opcode) {
@@ -758,7 +760,35 @@ void CPU::OP_LDX(BYTE opcode) {
             break;
     }
 
+    BYTE memory = read(address);
+    
+    X = memory;
+
 }
+
+void CPU::OP_STX(BYTE opcode) {
+    
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x86):
+            address = ADDR_ZERO();
+            break;
+        case (0x96):
+            address = ADDR_ZERO_Y();
+            break;
+        case (0x8E):
+            address = ADDR_ABS();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    write(address, X);
+    
+}
+
 
 void CPU::OP_LDY(BYTE opcode) {
 
@@ -785,6 +815,10 @@ void CPU::OP_LDY(BYTE opcode) {
             break;
     }
 
+    BYTE memory = read(address);
+
+    Y = memory;
+
 }
 
 void CPU::OP_STY(BYTE opcode) {
@@ -805,10 +839,13 @@ void CPU::OP_STY(BYTE opcode) {
             address = 0;
             break;
     }
-    
+
+    write(address, Y);
+
 }
 
-void OP_TAX(BYTE opcode) {
+void CPU::OP_TAX(BYTE opcode) {
+
     ADDRESS address; 
 
     switch (opcode) {
@@ -822,7 +859,8 @@ void OP_TAX(BYTE opcode) {
 
 }
     
-void OP_TXA(BYTE opcode) {
+void CPU::CPU::OP_TXA(BYTE opcode) {
+    
     ADDRESS address; 
         
     switch (opcode) {
@@ -833,9 +871,13 @@ void OP_TXA(BYTE opcode) {
             address = 0;
             break;
     }
+
+    A = X;
+
 }
 
-void OP_TAY(BYTE opcode) {
+void CPU::OP_TAY(BYTE opcode) {
+    
     ADDRESS address; 
 
     switch (opcode) {
@@ -847,9 +889,11 @@ void OP_TAY(BYTE opcode) {
             break;
     }
 
+    Y = A;
+    
 }
 
-void OP_TYA(BYTE opcode) {
+void CPU::OP_TYA(BYTE opcode) {
     
     ADDRESS address; 
         
@@ -862,9 +906,11 @@ void OP_TYA(BYTE opcode) {
             break;
     }
 
+    A = Y;
+
 }
 
-void OP_ADC(BYTE opcode) {
+void CPU::OP_ADC(BYTE opcode) {
     
     ADDRESS address;
 
@@ -894,4 +940,134 @@ void OP_ADC(BYTE opcode) {
             address = 0;
             break;
     }
+
+}
+
+void CPU::OP_AND(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x29):
+            address = ADDR_IMM();
+            break;
+        case (0x25):
+            address = ADDR_ZERO();
+            break;
+        case (0x35):
+            address = ADDR_ZERO_Y();
+            break;
+        case (0x2D):
+            address = ADDR_ABS();
+            break;
+        case (0x3D):
+            address = ADDR_ABS_X();
+            break;
+        case (0x39):
+            address = ADDR_ABS_Y();
+        case (0x21):
+            address = ADDR_IND_X();
+        case (0x31):
+            address = ADDR_IND_Y();
+        default:
+            address = 0;
+            break;
+    }
+
+    BYTE memory = read(address);
+
+    A = A & memory;
+
+}
+
+void CPU::OP_ORA(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x09):
+            address = ADDR_IMM();
+            break;
+        case (0x05):
+            address = ADDR_ZERO();
+            break;
+        case (0x15):
+            address = ADDR_ZERO_Y();
+            break;
+        case (0x0D):
+            address = ADDR_ABS();
+            break;
+        case (0x1D):
+            address = ADDR_ABS_X();
+            break;
+        case (0x19):
+            address = ADDR_ABS_Y();
+        case (0x01):
+            address = ADDR_IND_X();
+        case (0x11):
+            address = ADDR_IND_Y();
+        default:
+            address = 0;
+            break;
+    }
+
+    BYTE memory = read(address);
+
+    A = A | memory
+
+}
+
+void CPU::OP_EOR(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x49):
+            address = ADDR_IMM();
+            break;
+        case (0x45):
+            address = ADDR_ZERO();
+            break;
+        case (0x55):
+            address = ADDR_ZERO_Y();
+            break;
+        case (0x4D):
+            address = ADDR_ABS();
+            break;
+        case (0x5D):
+            address = ADDR_ABS_X();
+            break;
+        case (0x59):
+            address = ADDR_ABS_Y();
+        case (0x41):
+            address = ADDR_IND_X();
+        case (0x51):
+            address = ADDR_IND_Y();
+        default:
+            address = 0;
+            break;
+    }
+
+    BYTE memory = read(address);
+
+    A = A ^ memory;
+
+}
+
+void CPU::OP_BIT(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x24):
+            address = ADDR_ZERO();
+            break;
+        case (0x2C):
+            address = ADDR_ABS();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+    
 }

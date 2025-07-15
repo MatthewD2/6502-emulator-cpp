@@ -22,6 +22,7 @@ class CPU {
         void OP_LDA(BYTE opcode);
         void OP_STA(BYTE opcode);
         void OP_LDX(BYTE opcode);
+        void OP_STX(BYTE opcode);
         void OP_LDY(BYTE opcode);
         void OP_STY(BYTE opcode);
 
