@@ -660,8 +660,6 @@ ADDRESS CPU::ADDR_ZERO_Y() {
 
 }
 
-// Access Operations
-
 void CPU::OP_LDA(BYTE opcode) {
     
     ADDRESS address; 
@@ -807,9 +805,8 @@ void CPU::OP_STY(BYTE opcode) {
             address = 0;
             break;
     }
+    
 }
-
-// Transfer Operations
 
 void OP_TAX(BYTE opcode) {
     ADDRESS address; 
@@ -821,7 +818,7 @@ void OP_TAX(BYTE opcode) {
         default:
             address = 0;
             break;
-        }
+    }
 
 }
     
@@ -853,6 +850,7 @@ void OP_TAY(BYTE opcode) {
 }
 
 void OP_TYA(BYTE opcode) {
+    
     ADDRESS address; 
         
     switch (opcode) {
@@ -866,9 +864,8 @@ void OP_TYA(BYTE opcode) {
 
 }
 
-// Arithmetic Operations
-
 void OP_ADC(BYTE opcode) {
+    
     ADDRESS address;
 
     switch (opcode) {

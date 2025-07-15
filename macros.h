@@ -48,6 +48,6 @@ enum INSTRUCTION {
     CLC, SEC, CLI, SEI, CLD, SED, CLV,
     
     //Other
-    NOP,
+    NOP
 
 };
