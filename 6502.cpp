@@ -767,8 +767,8 @@ void CPU::OP_LDX(BYTE opcode) {
     
     X = memory;
 
-    SET_ZERO_FLAG(S, X == 0);
-    SET_NEGATIVE_FLAG(S, X & 0b10000000);
+    SET_ZERO_FLAG(P, X == 0);
+    SET_NEGATIVE_FLAG(P, X & 0b10000000);
 
 }
 
@@ -825,8 +825,8 @@ void CPU::OP_LDY(BYTE opcode) {
 
     Y = memory;
 
-    SET_ZERO_FLAG(S, Y == 0);
-    SET_NEGATIVE_FLAG(S, Y & 0b10000000);
+    SET_ZERO_FLAG(P, Y == 0);
+    SET_NEGATIVE_FLAG(P, Y & 0b10000000);
 
 }
 
@@ -868,8 +868,8 @@ void CPU::OP_TAX(BYTE opcode) {
 
     X = A;
 
-    SET_ZERO_FLAG(S, X == 0);
-    SET_NEGATIVE_FLAG(S, X & 0b10000000);
+    SET_ZERO_FLAG(P, X == 0);
+    SET_NEGATIVE_FLAG(P, X & 0b10000000);
 
 }
     
@@ -888,8 +888,8 @@ void CPU::CPU::OP_TXA(BYTE opcode) {
 
     A = X;
 
-    SET_ZERO_FLAG(S, A == 0);
-    SET_NEGATIVE_FLAG(S, A & 0b10000000);
+    SET_ZERO_FLAG(P, A == 0);
+    SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
 
@@ -908,8 +908,8 @@ void CPU::OP_TAY(BYTE opcode) {
 
     Y = A;
 
-    SET_ZERO_FLAG(S,  Y == 0);
-    SET_NEGATIVE_FLAG(S, Y & 0b10000000);
+    SET_ZERO_FLAG(P,  Y == 0);
+    SET_NEGATIVE_FLAG(P, Y & 0b10000000);
     
 }
 
@@ -928,8 +928,8 @@ void CPU::OP_TYA(BYTE opcode) {
 
     A = Y;
 
-    SET_ZERO_FLAG(S, A == 0);
-    SET_NEGATIVE_FLAG(S, A & 0b10000000);
+    SET_ZERO_FLAG(P, A == 0);
+    SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
 
@@ -968,8 +968,8 @@ void CPU::OP_AND(BYTE opcode) {
 
     A = A & memory;
 
-    SET_ZERO_FLAG(S, A == 0);
-    SET_NEGATIVE_FLAG(S, A & 0b10000000);
+    SET_ZERO_FLAG(P, A == 0);
+    SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
 
@@ -1008,8 +1008,8 @@ void CPU::OP_ORA(BYTE opcode) {
 
     A = A | memory;
 
-    SET_ZERO_FLAG(S, A == 0);
-    SET_NEGATIVE_FLAG(S, A & 0b10000000);
+    SET_ZERO_FLAG(P, A == 0);
+    SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
 
@@ -1048,8 +1048,8 @@ void CPU::OP_EOR(BYTE opcode) {
 
     A = A ^ memory;
 
-    SET_ZERO_FLAG(S, A == 0);
-    SET_NEGATIVE_FLAG(S, A & 0b10000000);
+    SET_ZERO_FLAG(P, A == 0);
+    SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
 
@@ -1072,9 +1072,9 @@ void CPU::OP_BIT(BYTE opcode) {
 
     BYTE result = A & memory;
 
-    SET_ZERO_FLAG(S, result == 0);
-    SET_OVERFLOW_FLAG(S, memory & 0b01000000);
-    SET_NEGATIVE_FLAG(S, memory & 0b10000000);
+    SET_ZERO_FLAG(P, result == 0);
+    SET_OVERFLOW_FLAG(P, memory & 0b01000000);
+    SET_NEGATIVE_FLAG(P, memory & 0b10000000);
     
 }
 
@@ -1111,11 +1111,11 @@ void CPU::OP_ADC(BYTE opcode) {
     
     BYTE memory = read(address);
     
-    SIGNAL carry = S & 0b00000001;
+    SIGNAL carry = P & 0b00000001;
 
     unsigned int result = A + memory + carry;
 
-    SIGNAL decimal = S & 0b00001000;
+    SIGNAL decimal = P & 0b00001000;
 
     if (decimal) {
         
@@ -1189,8 +1189,8 @@ void CPU::OP_INC(BYTE opcode) {
 
     write(address, memory);
 
-    SET_ZERO_FLAG(S, memory == 0);
-    SET_NEGATIVE_FLAG(S, memory & 0b10000000);
+    SET_ZERO_FLAG(P, memory == 0);
+    SET_NEGATIVE_FLAG(P, memory & 0b10000000);
 
 }
 
@@ -1222,8 +1222,8 @@ void CPU::OP_DEC(BYTE opcode) {
 
     write(address, memory);
 
-    SET_ZERO_FLAG(S, memory == 0);
-    SET_NEGATIVE_FLAG(S, memory & 0b10000000);
+    SET_ZERO_FLAG(P, memory == 0);
+    SET_NEGATIVE_FLAG(P, memory & 0b10000000);
 
 }
 
@@ -1242,8 +1242,8 @@ void CPU::OP_INX(BYTE opcode) {
 
     X = X + 1;
 
-    SET_ZERO_FLAG(S, X == 0);
-    SET_NEGATIVE_FLAG(S, X & 0b10000000);
+    SET_ZERO_FLAG(P, X == 0);
+    SET_NEGATIVE_FLAG(P, X & 0b10000000);
 
 }
 
@@ -1262,8 +1262,8 @@ void CPU::OP_DEX(BYTE opcode) {
 
     X = X - 1;
 
-    SET_ZERO_FLAG(S, X == 0);
-    SET_NEGATIVE_FLAG(S, X & 0b10000000);
+    SET_ZERO_FLAG(P, X == 0);
+    SET_NEGATIVE_FLAG(P, X & 0b10000000);
 
 }
 
@@ -1282,8 +1282,8 @@ void CPU::OP_INY(BYTE opcode) {
 
     Y = Y + 1;
 
-    SET_ZERO_FLAG(S, Y == 0);
-    SET_NEGATIVE_FLAG(S, Y & 0b10000000);
+    SET_ZERO_FLAG(P, Y == 0);
+    SET_NEGATIVE_FLAG(P, Y & 0b10000000);
 
 }
 
@@ -1302,8 +1302,8 @@ void CPU::OP_DEY(BYTE opcode) {
 
     Y = Y - 1;
 
-    SET_ZERO_FLAG(S, Y == 0);
-    SET_NEGATIVE_FLAG(S, Y & 0b10000000);
+    SET_ZERO_FLAG(P, Y == 0);
+    SET_NEGATIVE_FLAG(P, Y & 0b10000000);
 
 }
 
@@ -1336,13 +1336,13 @@ void CPU::OP_ASL(BYTE opcode) {
 
         SIGNAL carry = A & 0b10000000;
         
-        SET_CARRY_FLAG(S, carry);
+        SET_CARRY_FLAG(P, carry);
 
         A = A << 1;
         
-        SET_ZERO_FLAG(S, A == 0);
+        SET_ZERO_FLAG(P, A == 0);
         
-        SET_NEGATIVE_FLAG(S, A & 0b10000000);
+        SET_NEGATIVE_FLAG(P, A & 0b10000000);
         
     } else { // Memory
 
@@ -1350,13 +1350,13 @@ void CPU::OP_ASL(BYTE opcode) {
 
         SIGNAL carry = memory & 0b10000000;
         
-        SET_CARRY_FLAG(S, carry);
+        SET_CARRY_FLAG(P, carry);
 
         memory = memory << 1;
 
-        SET_ZERO_FLAG(S, memory == 0);
+        SET_ZERO_FLAG(P, memory == 0);
         
-        SET_NEGATIVE_FLAG(S, memory & 0b10000000);
+        SET_NEGATIVE_FLAG(P, memory & 0b10000000);
         
         write(address, memory);
 
@@ -1393,13 +1393,13 @@ void CPU::OP_LSR(BYTE opcode) {
     
         SIGNAL carry = A & 0b00000001;
         
-        SET_CARRY_FLAG(S, carry);
+        SET_CARRY_FLAG(P, carry);
 
         A = A >> 1;
 
-        SET_ZERO_FLAG(S, A == 0);
+        SET_ZERO_FLAG(P, A == 0);
 
-        SET_NEGATIVE_FLAG(S, A & 0b10000000);
+        SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
     } else { // Memory
 
@@ -1407,13 +1407,13 @@ void CPU::OP_LSR(BYTE opcode) {
 
         SIGNAL carry = memory & 0b00000001;
 
-        SET_CARRY_FLAG(S, carry);
+        SET_CARRY_FLAG(P, carry);
 
         memory = memory >> 1;
 
-        SET_ZERO_FLAG(S, memory == 0);
+        SET_ZERO_FLAG(P, memory == 0);
 
-        SET_NEGATIVE_FLAG(S, memory & 0b10000000);
+        SET_NEGATIVE_FLAG(P, memory & 0b10000000);
 
         write(address, memory);
 
@@ -1448,38 +1448,38 @@ void CPU::OP_ROL(BYTE opcode) {
 
     if (opcode == 0x2A) { // Accumulator
         
-        SIGNAL old_carry = S & 0b00000001;
+        SIGNAL old_carry = P & 0b00000001;
 
         SIGNAL carry = A & 0b10000000;
 
-        SET_CARRY_FLAG(S, carry);
+        SET_CARRY_FLAG(P, carry);
 
         A = A << 1;
 
         SET_CARRY_FLAG(A, old_carry);
 
-        SET_ZERO_FLAG(S, A == 0);
+        SET_ZERO_FLAG(P, A == 0);
 
-        SET_NEGATIVE_FLAG(S, A & 0b10000000);
+        SET_NEGATIVE_FLAG(P, A & 0b10000000);
         
 
     } else { // Memory
 
         BYTE memory = read(address);
 
-        SIGNAL old_carry = S & 0b00000001;
+        SIGNAL old_carry = P & 0b00000001;
 
         SIGNAL carry = memory & 0b10000000;
 
-        SET_CARRY_FLAG(S, carry);
+        SET_CARRY_FLAG(P, carry);
 
         memory = memory << 1;
 
         SET_CARRY_FLAG(memory, old_carry);
 
-        SET_ZERO_FLAG(S, memory == 0);
+        SET_ZERO_FLAG(P, memory == 0);
 
-        SET_NEGATIVE_FLAG(S, memory & 0b10000000);
+        SET_NEGATIVE_FLAG(P, memory & 0b10000000);
 
         write(address, memory);
 
@@ -1514,37 +1514,37 @@ void CPU::OP_ROR(BYTE opcode) {
 
     if (opcode == 0x6A) { // Accumulator
 
-        SIGNAL old_carry = S & 0b10000000;
+        SIGNAL old_carry = P & 0b10000000;
 
         SIGNAL carry = A & 0b00000001;
 
-        SET_CARRY_FLAG(S, carry);
+        SET_CARRY_FLAG(P, carry);
 
         A = A >> 1;
 
         SET_NEGATIVE_FLAG(A, old_carry);
         
-        SET_ZERO_FLAG(S, A == 0);
+        SET_ZERO_FLAG(P, A == 0);
 
-        SET_NEGATIVE_FLAG(S, A & 0b10000000);
+        SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
     } else { // Memory
         
         BYTE memory = read(address);
 
-        SIGNAL old_carry = S & 0b10000000;
+        SIGNAL old_carry = P & 0b10000000;
 
         SIGNAL carry = memory & 0b00000001;
 
-        SET_CARRY_FLAG(S, carry);
+        SET_CARRY_FLAG(P, carry);
 
         memory = memory >> 1;
 
         SET_NEGATIVE_FLAG(A, old_carry);
         
-        SET_ZERO_FLAG(S, memory == 0);
+        SET_ZERO_FLAG(P, memory == 0);
 
-        SET_NEGATIVE_FLAG(S, memory & 0b10000000);
+        SET_NEGATIVE_FLAG(P, memory & 0b10000000);
 
         write(address, memory);
 
@@ -1556,7 +1556,188 @@ void CPU::OP_CMP(BYTE opcode) {
     
     ADDRESS address;
 
+    switch (opcode) {
+        case (0xC9):
+            address = ADDR_IMM();
+        case (0xC5):
+            address = ADDR_ZERO();
+            break;
+        case (0xD5):
+            address = ADDR_ZERO_X();
+            break;
+        case (0xCD):
+            address = ADDR_ABS();
+            break;
+        case (0xDD):
+            address = ADDR_ABS_X();
+            break;
+        case (0xD9):
+            address = ADDR_ABS_Y();
+            break;
+        case (0xC1):
+            address = ADDR_IND_X();
+            break;
+        case (0xD1):
+            address = ADDR_IND_Y();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
 }
+
+void CPU::OP_CPX(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0xE0):
+            address = ADDR_IMM();
+        case (0xE4):
+            address = ADDR_ZERO();
+            break;
+        case (0xEC):
+            address = ADDR_ABS();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
+void CPU::OP_CPY(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0xC0):
+            address = ADDR_IMM();
+        case (0xC4):
+            address = ADDR_ZERO();
+            break;
+        case (0xCC):
+            address = ADDR_ABS();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
+void CPU::OP_BCC(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x90):
+            address = ADDR_REL();
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
+void CPU::OP_BCS(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x90):
+            address = ADDR_REL();
+        default:
+            address = 0;
+            break;
+    }
+}
+
+void CPU::OP_BEQ(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0xF0):
+            address = ADDR_REL();
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
+void CPU::OP_BNE(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0xD0):
+            address = ADDR_REL();
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
+void CPU::OP_BPL(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x10):
+            address = ADDR_REL();
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
+void CPU::OP_BMI(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x30):
+            address = ADDR_REL();
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
+void CPU::OP_BVC(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x50):
+            address = ADDR_REL();
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
+void CPU::OP_BVS(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x70):
+            address = ADDR_REL();
+        default:
+            address = 0;
+            break;
+    }
+
+}
+
 
 void CPU::OP_PHA(BYTE opcode) {
 
@@ -1576,6 +1757,14 @@ void CPU::OP_PHA(BYTE opcode) {
     S = S - 1;
 
 }
+
+void CPU::OP_CMP(BYTE opcode) {
+
+    ADDRESS address;
+
+
+}
+
 
 void CPU::OP_NOP(BYTE opcode) {
     
