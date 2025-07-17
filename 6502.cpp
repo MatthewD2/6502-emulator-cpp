@@ -699,6 +699,7 @@ void CPU::OP_LDA(BYTE opcode) {
     A = memory;
 
     SET_ZERO_FLAG(S, A == 0);
+    
     SET_NEGATIVE_FLAG(S, A & 0b10000000);
 
 }
@@ -768,6 +769,7 @@ void CPU::OP_LDX(BYTE opcode) {
     X = memory;
 
     SET_ZERO_FLAG(P, X == 0);
+    
     SET_NEGATIVE_FLAG(P, X & 0b10000000);
 
 }
@@ -826,6 +828,7 @@ void CPU::OP_LDY(BYTE opcode) {
     Y = memory;
 
     SET_ZERO_FLAG(P, Y == 0);
+    
     SET_NEGATIVE_FLAG(P, Y & 0b10000000);
 
 }
@@ -869,6 +872,7 @@ void CPU::OP_TAX(BYTE opcode) {
     X = A;
 
     SET_ZERO_FLAG(P, X == 0);
+
     SET_NEGATIVE_FLAG(P, X & 0b10000000);
 
 }
@@ -889,6 +893,7 @@ void CPU::CPU::OP_TXA(BYTE opcode) {
     A = X;
 
     SET_ZERO_FLAG(P, A == 0);
+
     SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
@@ -908,7 +913,8 @@ void CPU::OP_TAY(BYTE opcode) {
 
     Y = A;
 
-    SET_ZERO_FLAG(P,  Y == 0);
+    SET_ZERO_FLAG(P, Y == 0);
+    
     SET_NEGATIVE_FLAG(P, Y & 0b10000000);
     
 }
@@ -929,6 +935,7 @@ void CPU::OP_TYA(BYTE opcode) {
     A = Y;
 
     SET_ZERO_FLAG(P, A == 0);
+
     SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
@@ -969,6 +976,7 @@ void CPU::OP_AND(BYTE opcode) {
     A = A & memory;
 
     SET_ZERO_FLAG(P, A == 0);
+    
     SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
@@ -1009,6 +1017,7 @@ void CPU::OP_ORA(BYTE opcode) {
     A = A | memory;
 
     SET_ZERO_FLAG(P, A == 0);
+    
     SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
@@ -1049,6 +1058,7 @@ void CPU::OP_EOR(BYTE opcode) {
     A = A ^ memory;
 
     SET_ZERO_FLAG(P, A == 0);
+
     SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
@@ -1073,7 +1083,9 @@ void CPU::OP_BIT(BYTE opcode) {
     BYTE result = A & memory;
 
     SET_ZERO_FLAG(P, result == 0);
+
     SET_OVERFLOW_FLAG(P, memory & 0b01000000);
+
     SET_NEGATIVE_FLAG(P, memory & 0b10000000);
     
 }
@@ -1119,10 +1131,35 @@ void CPU::OP_ADC(BYTE opcode) {
 
     if (decimal) {
         
+        unsigned int result_first_BCD_digit = (A & 0b1111) + (memory & 0b1111) + (carry & 0b1111);
+
+        // Adjustments needed in case there is carry not accounted for in typical hex addition
         
+        result += result_first_BCD_digit > DECIMAL_LARGEST_DIGIT ? NIBBLE_ADJUST : NO_NIBBLE_ADJUST;
+
+        result += result > BCD_BYTE_MAX ? BCD_BYTE_ADJUST : BCD_BYTE_NO_ADJUST;
+
+        SET_CARRY_FLAG(P, result > BCD_BYTE_MAX);
+
+        SET_ZERO_FLAG(P, (result & 0b11111111) == 0);
+
+        SET_OVERFLOW_FLAG(P, (result ^ A) & (result ^ memory) & 0x80);
+
+        SET_NEGATIVE_FLAG(P, result & 0b10000000);
+        
+        A = result & 0b11111111;
         
     } else {
 
+        SET_CARRY_FLAG(P, result > BYTE_MAX);
+
+        SET_ZERO_FLAG(P, (result & 0b11111111) == 0);
+
+        SET_OVERFLOW_FLAG(P, (result ^ A) & (result ^ memory) & 0x80);
+
+        SET_NEGATIVE_FLAG(P, result & 0b10000000);
+
+        A = result & 0b11111111;
 
     }
 
@@ -1157,6 +1194,34 @@ void CPU::OP_SBC(BYTE opcode) {
         default:
             address = 0;
             break;
+    }
+
+    BYTE memory = read(address);
+    
+    SIGNAL carry = P & 0b00000001;
+
+    unsigned int result = A + ~memory + carry;
+
+    SIGNAL decimal = P & 0b00001000;
+
+    if (decimal) {
+
+        
+
+        A = result & 0b11111111;
+
+    } else {
+
+        SET_CARRY_FLAG(P, (result & 0b100000000) != 0);
+
+        SET_ZERO_FLAG(P, (result & 0b11111111) == 0);
+        
+        SET_OVERFLOW_FLAG(P, (result ^ A) & (result ^ (~memory)) & 0x80);
+
+        SET_NEGATIVE_FLAG(P, result & 0b10000000);
+
+        A = result & 0b11111111;
+
     }
 
 }
@@ -1243,6 +1308,7 @@ void CPU::OP_INX(BYTE opcode) {
     X = X + 1;
 
     SET_ZERO_FLAG(P, X == 0);
+
     SET_NEGATIVE_FLAG(P, X & 0b10000000);
 
 }
@@ -1263,6 +1329,7 @@ void CPU::OP_DEX(BYTE opcode) {
     X = X - 1;
 
     SET_ZERO_FLAG(P, X == 0);
+
     SET_NEGATIVE_FLAG(P, X & 0b10000000);
 
 }
@@ -1283,6 +1350,7 @@ void CPU::OP_INY(BYTE opcode) {
     Y = Y + 1;
 
     SET_ZERO_FLAG(P, Y == 0);
+
     SET_NEGATIVE_FLAG(P, Y & 0b10000000);
 
 }
@@ -1303,6 +1371,7 @@ void CPU::OP_DEY(BYTE opcode) {
     Y = Y - 1;
 
     SET_ZERO_FLAG(P, Y == 0);
+
     SET_NEGATIVE_FLAG(P, Y & 0b10000000);
 
 }
@@ -1585,6 +1654,16 @@ void CPU::OP_CMP(BYTE opcode) {
             break;
     }
 
+    BYTE memory = read(address);
+
+    BYTE result = A - memory;
+
+    SET_CARRY_FLAG(P, A >= memory);
+    
+    SET_ZERO_FLAG(P, A == memory);
+    
+    SET_NEGATIVE_FLAG(P, result & 0b10000000);
+
 }
 
 void CPU::OP_CPX(BYTE opcode) {
@@ -1605,6 +1684,16 @@ void CPU::OP_CPX(BYTE opcode) {
             break;
     }
 
+    BYTE memory = read(address);
+
+    BYTE result = X - memory;
+
+    SET_CARRY_FLAG(P, X >= memory);
+    
+    SET_ZERO_FLAG(P, X == memory);
+    
+    SET_NEGATIVE_FLAG(P, result & 0b10000000);
+
 }
 
 void CPU::OP_CPY(BYTE opcode) {
@@ -1624,6 +1713,16 @@ void CPU::OP_CPY(BYTE opcode) {
             address = 0;
             break;
     }
+
+    BYTE memory = read(address);
+
+    BYTE result = Y - memory;
+
+    SET_CARRY_FLAG(P, Y >= memory);
+    
+    SET_ZERO_FLAG(P, Y == memory);
+    
+    SET_NEGATIVE_FLAG(P, result & 0b10000000);
 
 }
 
@@ -1758,13 +1857,239 @@ void CPU::OP_PHA(BYTE opcode) {
 
 }
 
-void CPU::OP_CMP(BYTE opcode) {
+void CPU::OP_PHP(BYTE opcode) {
 
     ADDRESS address;
 
+    switch (opcode) {
+        case (0x08):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    BYTE status = P;
+
+    status = status | 0b00110000;
+
+    write(0x0100 + S, status);
+
+    S = S - 1;
 
 }
 
+void CPU::OP_PLA(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x68):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    S = S + 1;
+
+    A = read(0x0100 + S);
+
+    SET_ZERO_FLAG(P, A == 0);
+    
+    SET_NEGATIVE_FLAG(P, A & 0b10000000);
+
+}
+
+void CPU::OP_PLP(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x28):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    S = S + 1;
+
+    BYTE memory = read(0x0100 + S);
+
+    SET_CARRY_FLAG(P, memory & 0b00000001);
+    
+    SET_ZERO_FLAG(P, memory & 0b00000010);
+    
+    SET_INTERRUPT_FLAG(P, memory & 0b00000100);
+    
+    SET_DECIMAL_FLAG(P, memory & 0b00001000);
+    
+    SET_OVERFLOW_FLAG(P, memory & 0b01000000);
+
+    SET_NEGATIVE_FLAG(P, memory & 0b10000000);
+
+}
+
+void CPU::OP_TXS(BYTE opcode) {
+    
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x9A):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    S = X;
+
+}
+
+void CPU::OP_TSX(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0xBA):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    X = S;
+
+    SET_ZERO_FLAG(P, X == 0);
+    
+    SET_NEGATIVE_FLAG(P, X & 0b10000000);
+
+}
+
+void CPU::OP_CLC(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x18):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    SET_CARRY_FLAG(P, 0);
+
+}
+
+void CPU::OP_SEC(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x38):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    SET_CARRY_FLAG(P, 1);
+
+}
+
+void CPU::OP_CLI(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x58):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    SET_INTERRUPT_FLAG(P, 0);
+
+}
+
+void CPU::OP_SEI(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x78):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    SET_INTERRUPT_FLAG(P, 1);
+
+}
+
+void CPU::OP_CLD(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0xD8):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    SET_DECIMAL_FLAG(P, 0);
+
+}
+
+void CPU::OP_SED(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0xF8):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    SET_DECIMAL_FLAG(P, 1);
+
+}
+
+void CPU::OP_CLV(BYTE opcode) {
+
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0xB8):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    SET_OVERFLOW_FLAG(P, 0);
+
+}
 
 void CPU::OP_NOP(BYTE opcode) {
     
