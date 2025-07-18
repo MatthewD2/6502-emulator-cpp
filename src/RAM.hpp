@@ -4,7 +4,9 @@
 #include <iostream>
 #include <string.h>
 #include <vector>
-#include "6502.hpp"
+
+#include "types.h"
+#include "macros.h"
 
 class RAM {
     public:

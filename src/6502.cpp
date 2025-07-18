@@ -1738,6 +1738,16 @@ void CPU::OP_BCC(BYTE opcode) {
             break;
     }
 
+    SIGNAL carry = P & 0b00000001;
+
+    if (!carry) {
+        
+        /* Since in relative addressing, we already retrieve offset.
+         we simply need to set PC to be address */
+        
+        PC = address; 
+    }
+
 }
 
 void CPU::OP_BCS(BYTE opcode) {
@@ -1751,6 +1761,17 @@ void CPU::OP_BCS(BYTE opcode) {
             address = 0;
             break;
     }
+
+    SIGNAL carry = P & 0b00000001;
+
+    if (carry) {
+        
+        /* Since in relative addressing, we already retrieve offset.
+         we simply need to set PC to be address */
+        
+        PC = address; 
+    }
+
 }
 
 void CPU::OP_BEQ(BYTE opcode) {
@@ -1763,6 +1784,16 @@ void CPU::OP_BEQ(BYTE opcode) {
         default:
             address = 0;
             break;
+    }
+
+    SIGNAL zero = P & 0b00000010;
+
+    if (zero) {
+        
+        /* Since in relative addressing, we already retrieve offset.
+         we simply need to set PC to be address */
+        
+        PC = address; 
     }
 
 }
@@ -1779,6 +1810,16 @@ void CPU::OP_BNE(BYTE opcode) {
             break;
     }
 
+    SIGNAL zero = P & 0b00000010;
+
+    if (!zero) {
+        
+        /* Since in relative addressing, we already retrieve offset.
+         we simply need to set PC to be address */
+        
+        PC = address; 
+    }
+
 }
 
 void CPU::OP_BPL(BYTE opcode) {
@@ -1791,6 +1832,17 @@ void CPU::OP_BPL(BYTE opcode) {
         default:
             address = 0;
             break;
+    }
+
+
+    SIGNAL negative = P & 0b10000000;
+
+    if (!negative) {
+        
+        /* Since in relative addressing, we already retrieve offset.
+         we simply need to set PC to be address */
+        
+        PC = address; 
     }
 
 }
@@ -1807,6 +1859,16 @@ void CPU::OP_BMI(BYTE opcode) {
             break;
     }
 
+    SIGNAL negative = P & 0b10000000;
+
+    if (negative) {
+        
+        /* Since in relative addressing, we already retrieve offset.
+         we simply need to set PC to be address */
+        
+        PC = address; 
+    }
+
 }
 
 void CPU::OP_BVC(BYTE opcode) {
@@ -1819,6 +1881,16 @@ void CPU::OP_BVC(BYTE opcode) {
         default:
             address = 0;
             break;
+    }
+
+    SIGNAL overflow = P & 0b01000000;
+
+    if (!overflow) {
+        
+        /* Since in relative addressing, we already retrieve offset.
+         we simply need to set PC to be address */
+        
+        PC = address; 
     }
 
 }
@@ -1835,8 +1907,114 @@ void CPU::OP_BVS(BYTE opcode) {
             break;
     }
 
+    SIGNAL overflow = P & 0b01000000;
+
+    if (!overflow) {
+        
+        /* Since in relative addressing, we already retrieve offset.
+         we simply need to set PC to be address */
+        
+        PC = address; 
+    }
+
 }
 
+void CPU::OP_JMP(BYTE opcode) {
+    
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x4C):
+            address = ADDR_ABS();
+            break;
+        case (0x6C):
+            address = ADDR_IND();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    PC = address;
+
+}
+
+void CPU::OP_JSR(BYTE opcode) {
+    
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x20):
+            address = ADDR_ABS();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    ADDRESS return_address = PC - 1;
+
+    BYTE ra_high_byte = return_address >> 8;
+    BYTE ra_low_byte = return_address & 0b11111111;
+
+    write(0x0100 + S, ra_high_byte);
+    
+    S = S - 1;
+
+    write(0x0100 + S, ra_low_byte);
+
+    S = S - 1;
+
+    PC = address;
+
+}
+
+void CPU::OP_RTS(BYTE opcode) {
+    
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x60):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    ADDRESS return_address = 0;
+
+    BYTE ra_low_byte = read(0x0100 + S);
+
+    S = S + 1;
+
+    return_address |= ra_low_byte;
+
+    BYTE ra_high_byte = read(0x0100 + S);
+
+    S = S + 1;
+
+    return_address |= (ra_high_byte << 8);
+
+    PC = return_address + 1;
+
+}
+
+void CPU::OP_BRK(BYTE opcode) {
+
+}
+
+void CPU::OP_RTI(BYTE opcode) {
+    
+}
+
+void CPU::IRQ() {
+
+}
+
+void CPU::NMI() {
+
+}
 
 void CPU::OP_PHA(BYTE opcode) {
 
@@ -2102,5 +2280,40 @@ void CPU::OP_NOP(BYTE opcode) {
             address = 0;
             break;
     }
+
+}
+
+BYTE CPU::getA() {
+
+    return A;
+
+}
+
+BYTE CPU::getX() {
+
+    return X;
+
+}
+
+BYTE CPU::getY() {
+
+    return Y;
+
+}
+
+ADDRESS CPU::getPC() {
+
+    return PC;
+}
+
+BYTE CPU::getP() {
+
+    return P;
+
+}
+
+BYTE CPU::getS() {
+    
+    return S;
 
 }

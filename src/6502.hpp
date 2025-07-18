@@ -1,6 +1,7 @@
 #pragma once
 
 #include "macros.h"
+#include "types.h"
 
 #include <cstdint>
 #include <stdio.h>
@@ -106,6 +107,20 @@ class CPU {
         // Other Operations
 
         void OP_NOP(BYTE opcode);
+
+        // Interrupts
+
+        void IRQ();
+        void NMI();
+
+        // Getters
+
+        BYTE getA();
+        BYTE getX();
+        BYTE getY();
+        ADDRESS getPC();
+        BYTE getS();
+        BYTE getP();
 
         // Addressing Modes:
 

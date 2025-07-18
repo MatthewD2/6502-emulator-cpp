@@ -1,16 +1,22 @@
 #pragma once
 
-#include <cstdint>
-
 #define MEM_CAPACITY 0x10000
 #define OPCODE_LIMIT 0xFF + 1
 #define BYTE_MAX 0xFF
 #define BCD_BYTE_MAX 0x99
 #define DECIMAL_LARGEST_DIGIT 9
-#define NIBBLE_ADJUST 6
+#define NIBBLE_ADJUST 0x6
 #define NO_NIBBLE_ADJUST 0
-#define BCD_BYTE_ADJUST 96
+#define BCD_BYTE_ADJUST 0x60
 #define BCD_BYTE_NO_ADJUST 0
+#define NMI_VECTOR_LOW 0xFFFA
+#define NMI_VECTOR_HIGH 0xFFFB
+#define IRQ_VECTOR_LOW 0xFFFE
+#define IRQ_VECTOR_HIGH 0xFFFF
+#define RESET_VECTOR_LOW 0xFFFC
+#define RESET_VECTOR_HIGH 0xFFFD
+#define BRK_VECTOR_LOW 0xFFFE
+#define BRK_VECTOR_HIGH 0xFFFF
 
 #define NEGATIVE(x) (((x) & 0b10000000) != 0)
 #define SIGN_EXTEND(x) ((x) |= 0b1111111100000000)
@@ -58,46 +64,3 @@
              | ( ((bit) ? 0b00010000 : 0) ); \
   } while (0)
   
-typedef uint8_t BYTE;
-typedef bool CLOCK;
-typedef bool SIGNAL;
-typedef uint16_t ADDRESS;
-typedef BYTE (*MEM_READ)(ADDRESS);
-typedef void (*MEM_WRITE)(ADDRESS, BYTE);
-
-enum INSTRUCTION {
-
-    // Access
-    LDA, STA, LDX, STX, LDY, STY,
-    
-    //Transfer
-    TAX, TXA, TAY, TYA, 
-    
-    //Arithmetic
-    ADC, SBC, INC, DEC, INX, DEX, INY, DEY,
-    
-    //Shift
-    ASL, LSR, ROL, ROR,
-    
-    //Bitwise
-    AND, ORA, EOR, BIT,
-    
-    //Compare
-    CMP, CPX, CPY,
-    
-    //Branch
-    BCC, BCS, BEQ, BNE, BPL, BMI, BVC, BVS,
-    
-    //Jump
-    JMP, JSR, RTS, BRK, RTI,
-    
-    //Stack
-    PHA, PLA, PHP, PLP, TXS, TSX,
-    
-    //Flags
-    CLC, SEC, CLI, SEI, CLD, SED, CLV,
-    
-    //Other
-    NOP
-
-};
