@@ -2,7 +2,7 @@
 
 #define MEM_CAPACITY 0x10000
 
-#define OPCODE_LIMIT 0xFF + 1
+#define DECODER_CAPACITY 0xFF + 1
 
 #define BYTE_MAX 0xFF
 #define BCD_BYTE_MAX 0x99

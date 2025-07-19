@@ -43,16 +43,6 @@ void CPU::EXECUTE() {
 
         BYTE opcode = read(PC);
 
-        if (PC == 0xFFFF) {
-        
-            // TODO: Throw exception here to warn user
-
-            cout << "PC Overflow Issue" << endl; 
-
-            return;
-
-        }
-
         PC++;
 
         INSTRUCTION instr = decoder[opcode];
@@ -253,14 +243,14 @@ void CPU::EXECUTE() {
                 cout << "End of Program or Illegal Opcode Found" << endl;
                 return; // exit execution once we come across a non-existant operation
         }
-        
+
     }
 
 }
 
 void CPU::SetOpcodes() {
 
-    memset(decoder, INSTRUCTION::ILL, sizeof(INSTRUCTION) * OPCODE_LIMIT);
+    memset(decoder, INSTRUCTION::ILL, sizeof(INSTRUCTION) * DECODER_CAPACITY);
 
     // Access
     decoder[0xA9] = INSTRUCTION::LDA;

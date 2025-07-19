@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <iomanip>
 #include <string.h>
+#include <fstream>
 
 using namespace std;
 
@@ -165,6 +166,6 @@ class CPU {
 
         // Instruction LUT / Decoder
 
-        INSTRUCTION decoder[OPCODE_LIMIT];
+        INSTRUCTION decoder[DECODER_CAPACITY];
 
 };

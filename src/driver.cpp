@@ -1,5 +1,4 @@
 #include "6502.hpp"
-#include "RAM.hpp"
 
 BYTE _memory[MEM_CAPACITY];
 
@@ -15,7 +14,10 @@ void WRITE(ADDRESS addr, BYTE data) {
 
 }
 
-int LOAD_ROM(const string& filename) {
+/* Takes as an argument the filename/location of the binary
+    to execute as well as a base address to store the binary in memory. */
+
+int LOAD_ROM(const string& filename, ADDRESS base_addr) {
 
     ifstream file(filename, ios::binary);
 
@@ -31,7 +33,7 @@ int LOAD_ROM(const string& filename) {
 
     int byte;
     
-    ADDRESS address = 0x8000;
+    ADDRESS address = base_addr;
     
     while ((byte = file.get()) != EOF) {
         
@@ -51,7 +53,10 @@ int LOAD_ROM(const string& filename) {
 
 int main() {
 
-    LOAD_ROM("../tests/test.bin");
+    LOAD_ROM("../tests/6502_functional_test.bin", 0x0000);
+    CPU test = CPU(READ, WRITE);
+
+    test.EXECUTE();
 
     return 0;
 }
