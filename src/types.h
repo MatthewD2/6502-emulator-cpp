@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <exception>
 
 typedef uint8_t BYTE;
 typedef bool CLOCK;
@@ -42,6 +43,9 @@ enum INSTRUCTION {
     CLC, SEC, CLI, SEI, CLD, SED, CLV,
     
     //Other
-    NOP
+    NOP,
+
+    // Illegal
+    ILL
 
 };

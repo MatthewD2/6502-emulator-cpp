@@ -1,7 +1,9 @@
 #pragma once
 
 #define MEM_CAPACITY 0x10000
+
 #define OPCODE_LIMIT 0xFF + 1
+
 #define BYTE_MAX 0xFF
 #define BCD_BYTE_MAX 0x99
 #define DECIMAL_LARGEST_DIGIT 9
@@ -9,6 +11,7 @@
 #define NO_NIBBLE_ADJUST 0
 #define BCD_BYTE_ADJUST 0x60
 #define BCD_BYTE_NO_ADJUST 0
+
 #define NMI_VECTOR_LOW 0xFFFA
 #define NMI_VECTOR_HIGH 0xFFFB
 #define IRQ_VECTOR_LOW 0xFFFE
@@ -17,6 +20,8 @@
 #define RESET_VECTOR_HIGH 0xFFFD
 #define BRK_VECTOR_LOW 0xFFFE
 #define BRK_VECTOR_HIGH 0xFFFF
+
+#define ILLEGAL_OP 0x03
 
 #define NEGATIVE(x) (((x) & 0b10000000) != 0)
 #define SIGN_EXTEND(x) ((x) |= 0b1111111100000000)

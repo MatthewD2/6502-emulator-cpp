@@ -2,6 +2,28 @@
 
 CPU::CPU() {
 
+    // A = 0;
+    // X = 0;
+    // Y = 0;
+    // PC = 0xFFFC;
+    // S = 0xFD;
+    // P = 0b00110100;
+
+    A = 0;
+    X = 0;
+    Y = 0;
+    PC = 0;
+    S = 0;
+    P = 0;
+
+    SetOpcodes();
+
+    cout << "POWER UP FINISHED" << endl;
+
+}
+
+void CPU::RESET() {
+
     A = 0;
     X = 0;
     Y = 0;
@@ -9,16 +31,29 @@ CPU::CPU() {
     S = 0xFD;
     P = 0b00110100;
 
-    SetOpcodes();
+    cout << "RESET FINISHED" << endl;
 
-    cout << "POWER UP FINISHED" << endl;
 }
 
-void CPU::EXECUTE() {
+void CPU::EXECUTE(MEM_READ reader, MEM_WRITE writer) {
+
+    read = reader;
+
+    write = writer;
     
     while (1) {
 
         BYTE opcode = read(PC);
+
+        if (PC == 0xFFFF) {
+        
+            // TODO: Throw exception here to warn user
+
+            cout << "PC Overflow Issue" << endl; 
+
+            return;
+
+        }
 
         PC++;
 
@@ -217,13 +252,16 @@ void CPU::EXECUTE() {
                 break;
             
             default:
-                break;
+                cout << "End of Program or Illegal Opcode Found" << endl;
+                return; // exit execution once we come across a non-existant operation
         }
     }
 
 }
 
 void CPU::SetOpcodes() {
+
+    memset(decoder, INSTRUCTION::ILL, sizeof(INSTRUCTION) * OPCODE_LIMIT);
 
     // Access
     decoder[0xA9] = INSTRUCTION::LDA;
@@ -506,7 +544,6 @@ ADDRESS CPU::ADDR_IMP() {
 
 }
 
-
 ADDRESS CPU::ADDR_IND() {
 
     BYTE low_byte = read(PC);
@@ -521,7 +558,12 @@ ADDRESS CPU::ADDR_IND() {
 
     BYTE addr_low_byte = read(pointer);
 
-    pointer++;
+    /* Note: this pointer increment implements a bug in the
+       original MOS 6502 in which if the pointer update reaches the
+       end of the page, there is a wrap-around back to the
+       beginning of the same page */
+
+    pointer = (pointer & 0b1111111100000000) + ((pointer + 1) & 0b0000000011111111);
 
     BYTE addr_high_byte = read(pointer);
 
@@ -1131,11 +1173,11 @@ void CPU::OP_ADC(BYTE opcode) {
 
     if (decimal) {
         
-        unsigned int result_first_BCD_digit = (A & 0b1111) + (memory & 0b1111) + (carry & 0b1111);
+        unsigned int low_nibble = (A & 0b1111) + (memory & 0b1111) + (carry & 0b1111);
 
         // Adjustments needed in case there is carry not accounted for in typical hex addition
         
-        result += result_first_BCD_digit > DECIMAL_LARGEST_DIGIT ? NIBBLE_ADJUST : NO_NIBBLE_ADJUST;
+        result += low_nibble > DECIMAL_LARGEST_DIGIT ? NIBBLE_ADJUST : NO_NIBBLE_ADJUST;
 
         result += result > BCD_BYTE_MAX ? BCD_BYTE_ADJUST : BCD_BYTE_NO_ADJUST;
 
@@ -1206,7 +1248,19 @@ void CPU::OP_SBC(BYTE opcode) {
 
     if (decimal) {
 
+        unsigned int low_nibble = (A & 0b1111) +  (~memory & 0b1111) + (carry & 0b1111);
+
+        result -= (!(low_nibble & 0b10000000)) ? NIBBLE_ADJUST : NO_NIBBLE_ADJUST;
+
+        result -= (result > BCD_BYTE_MAX) ? BCD_BYTE_ADJUST : BCD_BYTE_NO_ADJUST;
+
+        SET_CARRY_FLAG(P, (result & 0b100000000) != 0);
+
+        SET_ZERO_FLAG(P, (result & 0b11111111) == 0);
         
+        SET_OVERFLOW_FLAG(P, (result ^ A) & (result ^ (~memory)) & 0x80);
+
+        SET_NEGATIVE_FLAG(P, result & 0b10000000);
 
         A = result & 0b11111111;
 
@@ -1955,6 +2009,7 @@ void CPU::OP_JSR(BYTE opcode) {
     ADDRESS return_address = PC - 1;
 
     BYTE ra_high_byte = return_address >> 8;
+
     BYTE ra_low_byte = return_address & 0b11111111;
 
     write(0x0100 + S, ra_high_byte);
@@ -2002,17 +2057,147 @@ void CPU::OP_RTS(BYTE opcode) {
 
 void CPU::OP_BRK(BYTE opcode) {
 
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x00):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    PC++; // skip the next byte
+
+    BYTE pc_high_byte = PC >> 8;
+
+    BYTE pc_low_byte = PC & 0b11111111;
+
+    write(0x0100 + S, pc_high_byte);
+    
+    S = S - 1;
+
+    write(0x0100 + S, pc_low_byte);
+
+    S = S - 1;
+
+    BYTE flags = P | 0b00110000;
+
+    write(0x0100 + S, flags);
+
+    S = S - 1;
+
+    pc_low_byte = read(IRQ_VECTOR_LOW);
+    
+    pc_high_byte = read(IRQ_VECTOR_HIGH);
+
+    PC = (pc_high_byte << 8) | pc_low_byte;
+
+    SET_INTERRUPT_FLAG(P, 1);
+
 }
 
 void CPU::OP_RTI(BYTE opcode) {
     
+    ADDRESS address;
+
+    switch (opcode) {
+        case (0x40):
+            address = ADDR_IMP();
+            break;
+        default:
+            address = 0;
+            break;
+    }
+
+    BYTE flags = read(0x0100 + S);
+
+    S = S + 1;
+
+    BYTE pc_low_byte = read(0x0100 + S);
+
+    S = S + 1;
+
+    BYTE pc_high_byte = read(0x0100 + S);
+
+    S = S + 1;
+
+    PC = (pc_high_byte << 8) | pc_low_byte;
+
+    SET_CARRY_FLAG(P, flags & 0b00000001);
+
+    SET_ZERO_FLAG(P, flags & 0b00000010);
+
+    SET_INTERRUPT_FLAG(P, flags & 0b00000100);
+
+    SET_DECIMAL_FLAG(P, flags & 0b00001000);
+
+    SET_OVERFLOW_FLAG(P, flags & 0b01000000);
+
+    SET_NEGATIVE_FLAG(P, flags & 0b10000000);
+
 }
 
 void CPU::IRQ() {
 
+    SIGNAL interrupt_disable = P & 0b00000100;
+
+    if (!interrupt_disable) {
+
+        BYTE pc_high_byte = PC >> 8;
+
+        BYTE pc_low_byte = PC & 0b11111111;
+        
+        write(0x0100 + S, pc_high_byte);
+
+        S = S - 1;
+
+        write(0x0100 + S, pc_low_byte);
+
+        S = S - 1;
+
+        BYTE flags = P | 0b00100000;
+
+        write(0x0100 + S, flags);
+
+        SET_INTERRUPT_FLAG(P, 1);
+
+        pc_low_byte = read(IRQ_VECTOR_LOW);
+        
+        pc_high_byte = read(IRQ_VECTOR_HIGH);
+
+        PC = (pc_high_byte << 8) | pc_low_byte;
+
+    }
+
 }
 
 void CPU::NMI() {
+
+        BYTE pc_high_byte = PC >> 8;
+
+        BYTE pc_low_byte = PC & 0b11111111;
+        
+        write(0x0100 + S, pc_high_byte);
+
+        S = S - 1;
+
+        write(0x0100 + S, pc_low_byte);
+
+        S = S - 1;
+
+        BYTE flags = P | 0b00100000;
+
+        write(0x0100 + S, flags);
+
+        SET_INTERRUPT_FLAG(P, 1);
+
+        pc_low_byte = read(NMI_VECTOR_LOW);
+        
+        pc_high_byte = read(NMI_VECTOR_HIGH);
+
+        PC = (pc_high_byte << 8) | pc_low_byte;
 
 }
 

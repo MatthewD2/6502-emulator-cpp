@@ -9,6 +9,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <stdbool.h>
+#include <iomanip>
+#include <string.h>
 
 using namespace std;
 
@@ -17,7 +19,27 @@ class CPU {
 
         CPU(); // Power Up State
 
-        void EXECUTE();
+        void EXECUTE(MEM_READ reader, MEM_WRITE writer);
+
+        void RESET();
+
+        void PrintRegisters(); // Print registers values for debugging
+
+        // Interrupts
+
+        void IRQ();
+        void NMI();
+
+        // Getters
+
+        BYTE getA();
+        BYTE getX();
+        BYTE getY();
+        ADDRESS getPC();
+        BYTE getS();
+        BYTE getP();
+    
+    private:
 
         // Access Operations
 
@@ -108,20 +130,6 @@ class CPU {
 
         void OP_NOP(BYTE opcode);
 
-        // Interrupts
-
-        void IRQ();
-        void NMI();
-
-        // Getters
-
-        BYTE getA();
-        BYTE getX();
-        BYTE getY();
-        ADDRESS getPC();
-        BYTE getS();
-        BYTE getP();
-
         // Addressing Modes:
 
         ADDRESS ADDR_ACC();
@@ -138,11 +146,7 @@ class CPU {
         ADDRESS ADDR_ZERO_X();
         ADDRESS ADDR_ZERO_Y();
 
-        void PrintRegisters(); // Print registers values for debugging
-
         void SetOpcodes(); // Populates our instruction look-up table on startup
-    
-    private:
         
         // Registers
 
