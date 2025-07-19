@@ -15,11 +15,12 @@
 using namespace std;
 
 class CPU {
+
     public:
 
-        CPU(); // Power Up State
+        CPU(MEM_READ reader, MEM_WRITE writer); // Power Up State
 
-        void EXECUTE(MEM_READ reader, MEM_WRITE writer);
+        void EXECUTE();
 
         void RESET();
 

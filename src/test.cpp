@@ -31,7 +31,7 @@ int LOAD_ROM(const string& filename) {
 
     int byte;
     
-    ADDRESS address = 0;
+    ADDRESS address = 0x8000;
     
     while ((byte = file.get()) != EOF) {
         
@@ -43,18 +43,15 @@ int LOAD_ROM(const string& filename) {
 
     file.close();
 
+    cout << "FINISHED LOADING ROM" << endl;
+
     return 0;
 
 }
 
 int main() {
 
-    CPU test = CPU();
-    LOAD_ROM("../tests/test.o");
-
-    test.EXECUTE(READ, WRITE);
-
-    cout << (int) READ(0x0200) << endl;
+    LOAD_ROM("../tests/test.bin");
 
     return 0;
 }

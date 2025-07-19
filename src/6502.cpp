@@ -1,20 +1,21 @@
 #include "6502.hpp"
 
-CPU::CPU() {
+CPU::CPU(MEM_READ reader, MEM_WRITE writer) {
 
-    // A = 0;
-    // X = 0;
-    // Y = 0;
-    // PC = 0xFFFC;
-    // S = 0xFD;
-    // P = 0b00110100;
+    read = reader;
+
+    write = writer;
 
     A = 0;
     X = 0;
     Y = 0;
-    PC = 0;
-    S = 0;
-    P = 0;
+    S = 0xFD;
+    P = 0b00110100;
+
+    BYTE pc_low_byte = read(RESET_VECTOR_LOW);
+    BYTE pc_high_byte = read(RESET_VECTOR_HIGH);
+
+    PC = (pc_high_byte << 8) | pc_low_byte;
 
     SetOpcodes();
 
@@ -24,22 +25,19 @@ CPU::CPU() {
 
 void CPU::RESET() {
 
-    A = 0;
-    X = 0;
-    Y = 0;
-    PC = 0xFFFC;
-    S = 0xFD;
-    P = 0b00110100;
+    BYTE pc_low_byte = read(RESET_VECTOR_LOW);
+    BYTE pc_high_byte = read(RESET_VECTOR_HIGH);
+
+    PC = (pc_high_byte << 8) | pc_low_byte;
+
+    S -= 3;
+    P |= 0b00000100;
 
     cout << "RESET FINISHED" << endl;
 
 }
 
-void CPU::EXECUTE(MEM_READ reader, MEM_WRITE writer) {
-
-    read = reader;
-
-    write = writer;
+void CPU::EXECUTE() {
     
     while (1) {
 
@@ -255,6 +253,7 @@ void CPU::EXECUTE(MEM_READ reader, MEM_WRITE writer) {
                 cout << "End of Program or Illegal Opcode Found" << endl;
                 return; // exit execution once we come across a non-existant operation
         }
+        
     }
 
 }
@@ -740,9 +739,9 @@ void CPU::OP_LDA(BYTE opcode) {
     
     A = memory;
 
-    SET_ZERO_FLAG(S, A == 0);
+    SET_ZERO_FLAG(P, A == 0);
     
-    SET_NEGATIVE_FLAG(S, A & 0b10000000);
+    SET_NEGATIVE_FLAG(P, A & 0b10000000);
 
 }
 
