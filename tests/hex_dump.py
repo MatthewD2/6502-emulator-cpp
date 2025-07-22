@@ -18,7 +18,6 @@ def main():
         print(f"Error opening file: {e}", file=sys.stderr)
         sys.exit(1)
 
-    # Print each byte as two-digit hex, separated by spaces
     hex_bytes = " ".join(f"{b:02X}" for b in data)
     print(hex_bytes)
 

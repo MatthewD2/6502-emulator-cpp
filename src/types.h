@@ -4,8 +4,8 @@
 #include <exception>
 
 typedef uint8_t BYTE;
-typedef bool CLOCK;
 typedef bool SIGNAL;
+typedef void (*CLOCK)(SIGNAL);
 typedef uint16_t ADDRESS;
 typedef BYTE (*MEM_READ)(ADDRESS);
 typedef void (*MEM_WRITE)(ADDRESS, BYTE);

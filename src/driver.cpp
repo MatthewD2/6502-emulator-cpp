@@ -14,6 +14,23 @@ void WRITE(ADDRESS addr, BYTE data) {
 
 }
 
+/* For debugging purposes: prints out individual bytes in hexadecimal
+    format. */
+
+void HEX_PRINT(BYTE byte) {
+        
+        cout 
+        << "0x"
+        << hex 
+        << uppercase
+        << std::setw(2) 
+        << setfill('0')
+        << (int) (byte)
+        << dec
+        << endl;
+
+}
+
 /* Takes as an argument the filename/location of the binary
     to execute as well as a base address to store the binary in memory. */
 
@@ -37,7 +54,7 @@ int LOAD_ROM(const string& filename, ADDRESS base_addr) {
     
     while ((byte = file.get()) != EOF) {
         
-        if (address >= MEM_CAPACITY) break;
+        if (address >= 0xFFFF) break;
         
         _memory[address++] = static_cast<BYTE>(byte);
 
@@ -53,7 +70,8 @@ int LOAD_ROM(const string& filename, ADDRESS base_addr) {
 
 int main() {
 
-    LOAD_ROM("../tests/6502_functional_test.bin", 0x0000);
+    LOAD_ROM("../tests/nestest.nes", 0xC000);
+
     CPU test = CPU(READ, WRITE);
 
     test.EXECUTE();

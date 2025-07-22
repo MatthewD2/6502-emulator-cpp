@@ -40,6 +40,10 @@ class CPU {
         ADDRESS getPC();
         BYTE getS();
         BYTE getP();
+
+        // Clock
+
+        CLOCK clk;
     
     private:
 
